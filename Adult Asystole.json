@@ -1,124 +1,201 @@
 {
   "protocolId": "AC-1",
   "title": "Adult Asystole / Pulseless Electrical Activity",
-  "start": "check_for_death_criteria",
-
+  "start": "return_spontaneous_circulation",
+  "description": "Protocol for managing adult asystole and pulseless electrical activity (PEA) with clear decision pathways and reversible causes",
+  
   "nodes": {
-    "check_for_death_criteria": {
+    "return_spontaneous_circulation": {
+      "id": "return_spontaneous_circulation",
+      "text": "AT ANY TIME: Return of Spontaneous Circulation - Go to Post Resuscitation Protocol AC-10",
+      "type": "event",
+      "next": "criteria_for_death",
+      "note": "This can occur at any point during resuscitation - exit to AC-10"
+    },
+
+    "criteria_for_death": {
+      "id": "criteria_for_death",
+      "text": "Criteria for Death / No Resuscitation? Review DNR / MOST Form",
       "type": "decision",
-      "text": "Criteria for Death / No Resuscitation? (DNR, MOST, obvious death)",
-      "yesNext": "no_resuscitation_path",
-      "noNext": "begin_cpr_block"
+      "yesNext": "death_criteria_list",
+      "noNext": "begin_continuous_cpr",
+      "decisionLabel": {
+        "yes": "Yes - Death criteria present",
+        "no": "No - Begin resuscitation"
+      }
     },
 
-    "no_resuscitation_path": {
-      "type": "terminal",
-      "text": "Do NOT begin resuscitation. Follow Deceased Persons Policy."
+    "death_criteria_list": {
+      "id": "death_criteria_list",
+      "text": "Death Criteria: Decomposition, Rigor mortis, Dependent lividity, Blunt force trauma, Injury incompatible with life, Extended downtime with asystole",
+      "type": "information",
+      "next": "do_not_resuscitate_policy"
     },
 
-    "begin_cpr_block": {
+    "do_not_resuscitate_policy": {
+      "id": "do_not_resuscitate_policy",
+      "text": "Do NOT begin resuscitation. Follow Deceased Persons Policy.",
+      "type": "terminal"
+    },
+
+    "begin_continuous_cpr": {
+      "id": "begin_continuous_cpr",
+      "text": "Begin Continuous CPR Compressions",
       "type": "action",
-      "text": "Begin continuous CPR and ventilations",
+      "next": "ventilation",
       "details": [
-        "Push hard ≥ 2 inches, 100–120/min",
-        "Change compressors every 2 min (≤10s interruptions)",
-        "Ventilate 1 breath every 6 sec",
-        "30:2 if no advanced airway",
-        "Monitor EtCO2 if available"
-      ],
-      "next": "attach_monitor"
+        "Push Hard (≥ 2 inches)",
+        "Push Fast (100 - 120 / min)",
+        "Change Compressors every 2 minutes (sooner if fatigued)",
+        "Limit changes / pulse checks ≤ 10 seconds"
+      ]
     },
 
-    "attach_monitor": {
+    "ventilation": {
+      "id": "ventilation",
+      "text": "Ventilation Protocol",
       "type": "action",
-      "text": "Attach AED / cardiac monitor (non-shockable rhythm expected)",
+      "next": "aed_procedure_if_available",
+      "details": [
+        "Ventilate 1 breath every 6 seconds",
+        "30:2 Compression:Ventilation if no Advanced Airway",
+        "Monitor EtCO2 if available"
+      ]
+    },
+
+    "aed_procedure_if_available": {
+      "id": "aed_procedure_if_available",
+      "text": "AED Procedure if available",
+      "type": "action",
+      "next": "cardiac_monitor"
+    },
+
+    "cardiac_monitor": {
+      "id": "cardiac_monitor",
+      "text": "Attach Cardiac Monitor",
+      "type": "action",
       "next": "iv_io_access"
     },
 
     "iv_io_access": {
-      "type": "action",
-      "text": "Establish IV or IO access (UP-6)",
+      "id": "iv_io_access",
+      "text": "IV or IO Access - Protocol UP-6",
+      "type": "reference",
       "next": "administer_epinephrine"
     },
 
     "administer_epinephrine": {
+      "id": "administer_epinephrine",
+      "text": "Epinephrine (1:10,000) 1 mg IV/IO - Repeat every 5 minutes",
       "type": "action",
-      "text": "Epinephrine 1 mg (1:10,000) IV/IO — repeat every 5 minutes",
-      "next": "fluid_bolus"
+      "next": "normal_saline_bolus",
+      "details": {
+        "concentration": "1:10,000",
+        "dose": "1 mg",
+        "route": "IV/IO",
+        "repeat": "Every 5 minutes"
+      }
     },
 
-    "fluid_bolus": {
+    "normal_saline_bolus": {
+      "id": "normal_saline_bolus",
+      "text": "Normal Saline Bolus 500 mL IV/IO - May repeat as needed, Maximum 2 L",
       "type": "action",
-      "text": "Normal Saline bolus 500 mL IV/IO — repeat as needed to max 2 L",
-      "next": "search_reversible_causes"
+      "next": "search_reversible_causes",
+      "details": {
+        "dose": "500 mL",
+        "route": "IV/IO",
+        "repeat": "As needed",
+        "maximum": "2 L"
+      }
     },
 
     "search_reversible_causes": {
+      "id": "search_reversible_causes",
+      "text": "Search for Reversible Causes (Hs & Ts)",
+      "type": "action",
+      "next": "reversible_causes_list",
+      "details": [
+        "Evaluate patient for all reversible causes",
+        "Address any identified causes immediately"
+      ]
+    },
+
+    "reversible_causes_list": {
+      "id": "reversible_causes_list",
+      "text": "Reversible Causes: Hypovolemia, Hypoxia, Hydrogen ion (acidosis), Hypothermia, Hypo/Hyperkalemia, Tension pneumothorax, Tamponade (cardiac), Toxins, Thrombosis - pulmonary (PE), Thrombosis - coronary (MI)",
+      "type": "information",
+      "next": "check_opioid_overdose",
+      "note": "Address reversible causes as they are identified"
+    },
+
+    "check_opioid_overdose": {
+      "id": "check_opioid_overdose",
+      "text": "Suspected Opioid Overdose?",
       "type": "decision",
-      "text": "Evaluate for reversible causes (Hs & Ts)",
-      "reversibleCauses": [
-        "Hypovolemia",
-        "Hypoxia",
-        "Hydrogen ion (acidosis)",
-        "Hypothermia",
-        "Hypo/Hyperkalemia",
-        "Tension pneumothorax",
-        "Tamponade (cardiac)",
-        "Toxins",
-        "Thrombosis — pulmonary (PE)",
-        "Thrombosis — coronary (MI)"
-      ],
-      "specialCase": {
-        "condition": "Suspected opioid overdose",
-        "action": "Administer Naloxone per TE-7"
-      },
-      "next": "check_blood_glucose"
+      "yesNext": "administer_naloxone",
+      "noNext": "check_blood_glucose",
+      "decisionLabel": {
+        "yes": "Yes - Suspected opioid overdose",
+        "no": "No - Continue protocol"
+      }
+    },
+
+    "administer_naloxone": {
+      "id": "administer_naloxone",
+      "text": "Administer Naloxone per Overdose / Toxic Ingestion Protocol TE-7",
+      "type": "reference",
+      "next": "check_blood_glucose",
+      "note": "Follow Protocol TE-7 for Naloxone administration"
     },
 
     "check_blood_glucose": {
+      "id": "check_blood_glucose",
+      "text": "Blood Glucose Analysis Procedure if applicable",
       "type": "optional",
-      "text": "Check blood glucose if applicable",
-      "next": "agency_specific_meds"
+      "next": "agency_medications"
     },
 
-    "agency_specific_meds": {
+    "agency_medications": {
+      "id": "agency_medications",
+      "text": "Available Agency Medications as indicated",
       "type": "optional",
-      "text": "Available agency medications as indicated",
       "next": "termination_or_continue"
     },
 
     "termination_or_continue": {
+      "id": "termination_or_continue",
+      "text": "On Scene Resuscitation / Termination of Resuscitation Protocol(s) AC-12 as indicated",
       "type": "decision",
-      "text": "Consider On-Scene Termination (AC-12)?",
       "yesNext": "terminate_on_scene",
-      "noNext": "cpr_loop_back"
-    },
-
-    "cpr_loop_back": {
-      "type": "loop",
-      "text": "Return to CPR and sequence above",
-      "loopTo": "begin_cpr_block"
+      "noNext": "continue_resuscitation",
+      "decisionLabel": {
+        "yes": "Yes - Terminate per AC-12",
+        "no": "No - Continue resuscitation"
+      }
     },
 
     "terminate_on_scene": {
+      "id": "terminate_on_scene",
+      "text": "Terminate resuscitation per Protocol AC-12 and local policy",
       "type": "terminal",
-      "text": "Terminate resuscitation per AC-12 and local policy"
+      "next": "notify_destination_medical_control"
     },
 
-    "rosc_event": {
-      "type": "event",
-      "trigger": "Any-time ROSC (pulse / EtCO2 spike > 40)",
-      "next": "post_resuscitation"
+    "continue_resuscitation": {
+      "id": "continue_resuscitation",
+      "text": "Continue resuscitation efforts",
+      "type": "loop",
+      "loopTo": "begin_continuous_cpr",
+      "next": "notify_destination_medical_control",
+      "note": "Return to CPR and sequence above"
     },
 
-    "post_resuscitation": {
-      "type": "jump",
-      "text": "Go to Post-Resuscitation Protocol (AC-10)"
-    },
-
-    "transport_or_med_control": {
-      "type": "end",
-      "text": "Notify destination or contact Medical Control"
+    "notify_destination_medical_control": {
+      "id": "notify_destination_medical_control",
+      "text": "Notify Destination or Contact Medical Control",
+      "type": "end"
     }
   }
 }
+
