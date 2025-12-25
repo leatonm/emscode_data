@@ -1,0 +1,90 @@
+{
+  "protocolId": "AC-3",
+  "title": "Cardiac Arrest; Adult",
+  "start": "criteria_for_death",
+  "nodes": {
+    "criteria_for_death": {
+      "id": "criteria_for_death",
+      "text": "Criteria for Death / No Resuscitation & Review DNR/MOST form",
+      "type": "decision",
+      "yesNext": "do_not_resuscitate",
+      "noNext": "begin_cpr"
+    },
+    "do_not_resuscitate": {
+      "id": "do_not_resuscitate",
+      "text": "Do not begin resuscitation. Follow Deceased Persons Policy.",
+      "type": "terminal",
+      "details": [
+        "Decomposition",
+        "Rigor mortis",
+        "Dependent lividity",
+        "Blunt trauma / incompatible with life",
+        "Extended downtime with asystole"
+      ]
+    },
+    "begin_cpr": {
+      "id": "begin_cpr",
+      "text": "Begin continuous CPR",
+      "type": "action",
+      "next": "attach_aed",
+      "details": {
+        "compressions": "Push hard ≥2 inches, 100–120/min",
+        "change_compressors": "Every 2 minutes or sooner if fatigued",
+        "ventilation": "1 breath every 6 seconds / 30:2 if no airway",
+        "monitor": "EtCO2 if available"
+      }
+    },
+    "attach_aed": {
+      "id": "attach_aed",
+      "text": "Attach AED / Monitor if available",
+      "type": "decision",
+      "yesNext": "shockable_rhythm",
+      "noNext": "continue_cpr"
+    },
+    "continue_cpr": {
+      "id": "continue_cpr",
+      "text": "Continue CPR 2 minutes, repeat and reassess",
+      "type": "action",
+      "next": "attach_aed"
+    },
+    "shockable_rhythm": {
+      "id": "shockable_rhythm",
+      "text": "Shockable rhythm?",
+      "type": "decision",
+      "yesNext": "vf_vt_pathway",
+      "noNext": "asystole_pea_pathway"
+    },
+    "vf_vt_pathway": {
+      "id": "vf_vt_pathway",
+      "text": "VF/VT → Follow Protocol AC-9 (Tachycardia)",
+      "type": "jump"
+    },
+    "asystole_pea_pathway": {
+      "id": "asystole_pea_pathway",
+      "text": "Asystole/PEA → Follow Protocol AC-1",
+      "type": "jump"
+    },
+    "opioid_check": {
+      "id": "opioid_check",
+      "text": "Arrest secondary to opioid overdose?",
+      "type": "decision",
+      "yesNext": "naloxone_treatment",
+      "noNext": "termination"
+    },
+    "naloxone_treatment": {
+      "id": "naloxone_treatment",
+      "text": "Administer Naloxone 0.4–2mg",
+      "type": "action",
+      "details": {
+        "adult": "0.4–2mg IN/IM/IV/IO/ETT, max 4mg",
+        "peds": "0.1 mg/kg IN/IV/IO/IM max 4mg"
+      },
+      "next": "termination"
+    },
+    "termination": {
+      "id": "termination",
+      "text": "Consider Termination on Scene per AC-12 or Contact Medical Control",
+      "type": "terminal"
+    }
+  }
+}
