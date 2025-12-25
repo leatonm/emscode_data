@@ -1,90 +1,194 @@
 {
   "protocolId": "AC-3",
   "title": "Cardiac Arrest; Adult",
-  "start": "criteria_for_death",
+  "start": "return_spontaneous_circulation",
+  "description": "Protocol for managing adult cardiac arrest with clear decision pathways",
+  
   "nodes": {
-    "criteria_for_death": {
-      "id": "criteria_for_death",
-      "text": "Criteria for Death / No Resuscitation & Review DNR/MOST form",
+    "return_spontaneous_circulation": {
+      "id": "return_spontaneous_circulation",
+      "text": "AT ANY TIME: Return of Spontaneous Circulation - Go to Post Resuscitation Protocol AC-10",
+      "type": "event",
+      "next": "review_dnr_most_form",
+      "note": "This can occur at any point during resuscitation"
+    },
+
+    "review_dnr_most_form": {
+      "id": "review_dnr_most_form",
+      "text": "Criteria for Death / No Resuscitation? Review DNR / MOST Form",
       "type": "decision",
-      "yesNext": "do_not_resuscitate",
-      "noNext": "begin_cpr"
-    },
-    "do_not_resuscitate": {
-      "id": "do_not_resuscitate",
-      "text": "Do not begin resuscitation. Follow Deceased Persons Policy.",
-      "type": "terminal",
-      "details": [
-        "Decomposition",
-        "Rigor mortis",
-        "Dependent lividity",
-        "Blunt trauma / incompatible with life",
-        "Extended downtime with asystole"
-      ]
-    },
-    "begin_cpr": {
-      "id": "begin_cpr",
-      "text": "Begin continuous CPR",
-      "type": "action",
-      "next": "attach_aed",
-      "details": {
-        "compressions": "Push hard ≥2 inches, 100–120/min",
-        "change_compressors": "Every 2 minutes or sooner if fatigued",
-        "ventilation": "1 breath every 6 seconds / 30:2 if no airway",
-        "monitor": "EtCO2 if available"
+      "yesNext": "death_criteria_list",
+      "noNext": "begin_continuous_cpr",
+      "decisionLabel": {
+        "yes": "Yes - Death criteria present",
+        "no": "No - Begin resuscitation"
       }
     },
-    "attach_aed": {
-      "id": "attach_aed",
-      "text": "Attach AED / Monitor if available",
-      "type": "decision",
-      "yesNext": "shockable_rhythm",
-      "noNext": "continue_cpr"
+
+    "death_criteria_list": {
+      "id": "death_criteria_list",
+      "text": "Death Criteria: Decomposition, Rigor mortis, Dependent lividity, Blunt force trauma, Injury incompatible with life, Extended downtime with asystole",
+      "type": "information",
+      "next": "do_not_resuscitate_policy"
     },
-    "continue_cpr": {
-      "id": "continue_cpr",
-      "text": "Continue CPR 2 minutes, repeat and reassess",
-      "type": "action",
-      "next": "attach_aed"
-    },
-    "shockable_rhythm": {
-      "id": "shockable_rhythm",
-      "text": "Shockable rhythm?",
-      "type": "decision",
-      "yesNext": "vf_vt_pathway",
-      "noNext": "asystole_pea_pathway"
-    },
-    "vf_vt_pathway": {
-      "id": "vf_vt_pathway",
-      "text": "VF/VT → Follow Protocol AC-9 (Tachycardia)",
-      "type": "jump"
-    },
-    "asystole_pea_pathway": {
-      "id": "asystole_pea_pathway",
-      "text": "Asystole/PEA → Follow Protocol AC-1",
-      "type": "jump"
-    },
-    "opioid_check": {
-      "id": "opioid_check",
-      "text": "Arrest secondary to opioid overdose?",
-      "type": "decision",
-      "yesNext": "naloxone_treatment",
-      "noNext": "termination"
-    },
-    "naloxone_treatment": {
-      "id": "naloxone_treatment",
-      "text": "Administer Naloxone 0.4–2mg",
-      "type": "action",
-      "details": {
-        "adult": "0.4–2mg IN/IM/IV/IO/ETT, max 4mg",
-        "peds": "0.1 mg/kg IN/IV/IO/IM max 4mg"
-      },
-      "next": "termination"
-    },
-    "termination": {
-      "id": "termination",
-      "text": "Consider Termination on Scene per AC-12 or Contact Medical Control",
+
+    "do_not_resuscitate_policy": {
+      "id": "do_not_resuscitate_policy",
+      "text": "Do NOT begin resuscitation. Follow Deceased Persons Policy.",
       "type": "terminal"
+    },
+
+    "begin_continuous_cpr": {
+      "id": "begin_continuous_cpr",
+      "text": "Begin Continuous CPR Compressions",
+      "type": "action",
+      "next": "als_available",
+      "details": [
+        "Push Hard (≥ 2 inches)",
+        "Push Fast (100 - 120 / min)",
+        "Change Compressors every 2 minutes (sooner if fatigued)",
+        "Limit changes / pulse checks ≤ 10 seconds",
+        "Ventilate 1 breath every 6 seconds",
+        "30:2 Compression: Ventilation if no Advanced Airway",
+        "Monitor EtCO2 if available"
+      ]
+    },
+
+    "als_available": {
+      "id": "als_available",
+      "text": "ALS Available?",
+      "type": "decision",
+      "yesNext": "cardiac_monitor",
+      "noNext": "aed_procedure_if_available",
+      "decisionLabel": {
+        "yes": "Yes - ALS available",
+        "no": "No - BLS only"
+      }
+    },
+
+    "cardiac_monitor": {
+      "id": "cardiac_monitor",
+      "text": "Attach Cardiac Monitor",
+      "type": "action",
+      "next": "shockable_rhythm_als"
+    },
+
+    "shockable_rhythm_als": {
+      "id": "shockable_rhythm_als",
+      "text": "Shockable Rhythm? (VF/VT)",
+      "type": "decision",
+      "yesNext": "vf_vt_tachycardia_protocol",
+      "noNext": "asystole_pea_protocol_ac1",
+      "decisionLabel": {
+        "yes": "Yes - VF/VT",
+        "no": "No - Asystole/PEA"
+      }
+    },
+
+    "vf_vt_tachycardia_protocol": {
+      "id": "vf_vt_tachycardia_protocol",
+      "text": "VF / VT - Follow Protocol AC-9 (Tachycardia Protocols AC-6, AC-7 as indicated)",
+      "type": "reference",
+      "next": "airway_protocol_ar123_als_vfvt"
+    },
+
+    "asystole_pea_protocol_ac1": {
+      "id": "asystole_pea_protocol_ac1",
+      "text": "Asystole / PEA - Follow Protocol AC-1 as indicated",
+      "type": "reference",
+      "next": "airway_protocol_ar123_als_asystole"
+    },
+
+    "airway_protocol_ar123_als_vfvt": {
+      "id": "airway_protocol_ar123_als_vfvt",
+      "text": "Airway Protocol(s) AR-1, AR-2, AR-3",
+      "type": "action",
+      "next": "arrest_secondary_to_opioid_od"
+    },
+
+    "airway_protocol_ar123_als_asystole": {
+      "id": "airway_protocol_ar123_als_asystole",
+      "text": "Airway Protocol(s) AR-1, AR-2, AR-3",
+      "type": "action",
+      "next": "arrest_secondary_to_opioid_od"
+    },
+
+    "aed_procedure_if_available": {
+      "id": "aed_procedure_if_available",
+      "text": "AED Procedure if available",
+      "type": "action",
+      "next": "shockable_rhythm_aed"
+    },
+
+    "shockable_rhythm_aed": {
+      "id": "shockable_rhythm_aed",
+      "text": "Shockable Rhythm?",
+      "type": "decision",
+      "yesNext": "aed_procedure_shock",
+      "noNext": "continue_cpr_2min_reassess_aed",
+      "decisionLabel": {
+        "yes": "Yes - Shock advised",
+        "no": "No - Continue CPR"
+      }
+    },
+
+    "aed_procedure_shock": {
+      "id": "aed_procedure_shock",
+      "text": "AED Procedure - Deliver Shock",
+      "type": "action",
+      "next": "continue_cpr_2min_reassess_aed"
+    },
+
+    "continue_cpr_2min_reassess_aed": {
+      "id": "continue_cpr_2min_reassess_aed",
+      "text": "Continue CPR 2 Minutes, Repeat and Reassess",
+      "type": "loop",
+      "loopTo": "shockable_rhythm_aed",
+      "next": "airway_protocol_ar123_aed"
+    },
+
+    "airway_protocol_ar123_aed": {
+      "id": "airway_protocol_ar123_aed",
+      "text": "Airway Protocol(s) AR-1, AR-2, AR-3",
+      "type": "action",
+      "next": "arrest_secondary_to_opioid_od"
+    },
+
+    "arrest_secondary_to_opioid_od": {
+      "id": "arrest_secondary_to_opioid_od",
+      "text": "Arrest secondary to Opioid Overdose?",
+      "type": "decision",
+      "yesNext": "administer_naloxone",
+      "noNext": "termination_on_scene_protocol_ac12",
+      "decisionLabel": {
+        "yes": "Yes - Suspected opioid OD",
+        "no": "No - Continue protocol"
+      }
+    },
+
+    "administer_naloxone": {
+      "id": "administer_naloxone",
+      "text": "Administer Naloxone",
+      "type": "action",
+      "next": "notify_destination_medical_control",
+      "details": {
+        "adult": "0.4–2 mg IN/IM/IV/IO/ETT, max 4 mg",
+        "pediatric": "0.1 mg/kg IN/IV/IO/IM, max 4 mg"
+      }
+    },
+
+    "termination_on_scene_protocol_ac12": {
+      "id": "termination_on_scene_protocol_ac12",
+      "text": "Consider Termination on Scene per Protocol AC-12 or Contact Medical Control",
+      "type": "terminal",
+      "next": "notify_destination_medical_control"
+    },
+
+    "notify_destination_medical_control": {
+      "id": "notify_destination_medical_control",
+      "text": "Notify Destination or Contact Medical Control",
+      "type": "end"
     }
   }
 }
+
