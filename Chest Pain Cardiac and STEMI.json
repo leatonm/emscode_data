@@ -1,0 +1,152 @@
+{
+  "protocolId": "AC-4",
+  "title": "Chest Pain: Cardiac and STEMI",
+  "start": "12lead_ecg_procedure",
+  "description": "Protocol for managing chest pain with cardiac and STEMI assessment, including clear decision pathways for STEMI vs non-STEMI management",
+  
+  "nodes": {
+    "12lead_ecg_procedure": {
+      "id": "12lead_ecg_procedure",
+      "text": "12 Lead ECG Procedure",
+      "type": "action",
+      "next": "initial_interventions"
+    },
+
+    "initial_interventions": {
+      "id": "initial_interventions",
+      "text": "Initial Interventions",
+      "type": "action",
+      "next": "acute_mi_stemi_decision",
+      "details": [
+        "Aspirin 81 mg x 4 PO (chewed) OR 325 mg PO",
+        "Nitroglycerin 0.3/0.4 mg Sublingual - Repeat every 5 minutes x 3 if prescribed to patient and BP ≥ 100",
+        "Cardiac Monitor"
+      ]
+    },
+
+    "acute_mi_stemi_decision": {
+      "id": "acute_mi_stemi_decision",
+      "text": "Acute MI / STEMI? (See STEMI Definition)",
+      "type": "decision",
+      "yesNext": "stemi_transport",
+      "noNext": "iv_io_access",
+      "decisionLabel": {
+        "yes": "Yes - STEMI confirmed",
+        "no": "No - Continue protocol"
+      },
+      "note": "Refer to STEMI definition criteria"
+    },
+
+    "stemi_definition": {
+      "id": "stemi_definition",
+      "text": "STEMI Definition: ≥ 1 mm ST Segment elevation in ≥ 2 contiguous leads, ≥ 2 mm ST/J point elevation in V2-V3 for men, ≥ 1.5 mm ST/J point elevation in V2-V3 for women, ECG software diagnoses Acute MI (symptomatic)",
+      "type": "information",
+      "next": "acute_mi_stemi_decision"
+    },
+
+    "stemi_transport": {
+      "id": "stemi_transport",
+      "text": "Transport based on: STEMI - EMS Triage and Destination Plan, Immediate Notification of Facility, Immediate Transmission of ECG if capable, Keep Scene Time to ≤ 15 Minutes",
+      "type": "action",
+      "next": "non_pci_center_check"
+    },
+
+    "non_pci_center_check": {
+      "id": "non_pci_center_check",
+      "text": "If transporting to Non-PCI Center - Reperfusion Checklist",
+      "type": "optional",
+      "next": "agency_specific_medications_stemi"
+    },
+
+    "agency_specific_medications_stemi": {
+      "id": "agency_specific_medications_stemi",
+      "text": "Agency Specific Medications: Thrombolytic, Heparin, Plavix",
+      "type": "optional",
+      "next": "notify_destination_medical_control"
+    },
+
+    "iv_io_access": {
+      "id": "iv_io_access",
+      "text": "IV / IO Protocol UP-6",
+      "type": "reference",
+      "next": "nitroglycerin_sl"
+    },
+
+    "nitroglycerin_sl": {
+      "id": "nitroglycerin_sl",
+      "text": "Nitroglycerin 0.3/0.4 mg SL - Repeat every 5 minutes as needed",
+      "type": "action",
+      "next": "nitroglycerin_paste",
+      "details": {
+        "dose": "0.3/0.4 mg",
+        "route": "Sublingual",
+        "repeat": "Every 5 minutes as needed",
+        "contraindication": "BP < 100"
+      }
+    },
+
+    "nitroglycerin_paste": {
+      "id": "nitroglycerin_paste",
+      "text": "Nitroglycerin Paste",
+      "type": "action",
+      "next": "pain_management"
+    },
+
+    "pain_management": {
+      "id": "pain_management",
+      "text": "Pain Management",
+      "type": "action",
+      "next": "check_hypotension_chf",
+      "details": {
+        "morphine": "2-4 mg IV/IO, repeat every 5 minutes as needed, maximum 10 mg",
+        "fentanyl": "50-75 mcg IV/IO, repeat 25 mcg every 20 minutes as needed, maximum 200 mcg",
+        "alternative": "Use either medication based on protocol and availability"
+      }
+    },
+
+    "check_hypotension_chf": {
+      "id": "check_hypotension_chf",
+      "text": "Assess for complications",
+      "type": "decision",
+      "yesNext": "hypotension_shock_protocol",
+      "noNext": "chf_pulmonary_edema_check",
+      "decisionLabel": {
+        "yes": "Yes - Hypotension/Shock present",
+        "no": "No - Continue assessment"
+      }
+    },
+
+    "hypotension_shock_protocol": {
+      "id": "hypotension_shock_protocol",
+      "text": "Hypotension / Shock Protocol AM-5 if indicated",
+      "type": "reference",
+      "next": "chf_pulmonary_edema_check"
+    },
+
+    "chf_pulmonary_edema_check": {
+      "id": "chf_pulmonary_edema_check",
+      "text": "CHF / Pulmonary Edema present?",
+      "type": "decision",
+      "yesNext": "chf_pulmonary_edema_protocol",
+      "noNext": "notify_destination_medical_control",
+      "decisionLabel": {
+        "yes": "Yes - CHF/Pulmonary Edema",
+        "no": "No - Continue protocol"
+      }
+    },
+
+    "chf_pulmonary_edema_protocol": {
+      "id": "chf_pulmonary_edema_protocol",
+      "text": "CHF / Pulmonary Edema Protocol AC-5 if indicated",
+      "type": "reference",
+      "next": "notify_destination_medical_control"
+    },
+
+    "notify_destination_medical_control": {
+      "id": "notify_destination_medical_control",
+      "text": "Notify Destination or Contact Medical Control",
+      "type": "end"
+    }
+  }
+}
+
