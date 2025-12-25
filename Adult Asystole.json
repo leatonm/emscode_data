@@ -1,0 +1,124 @@
+{
+  "protocolId": "AC-1",
+  "title": "Adult Asystole / Pulseless Electrical Activity",
+  "start": "check_for_death_criteria",
+
+  "nodes": {
+    "check_for_death_criteria": {
+      "type": "decision",
+      "text": "Criteria for Death / No Resuscitation? (DNR, MOST, obvious death)",
+      "yesNext": "no_resuscitation_path",
+      "noNext": "begin_cpr_block"
+    },
+
+    "no_resuscitation_path": {
+      "type": "terminal",
+      "text": "Do NOT begin resuscitation. Follow Deceased Persons Policy."
+    },
+
+    "begin_cpr_block": {
+      "type": "action",
+      "text": "Begin continuous CPR and ventilations",
+      "details": [
+        "Push hard ≥ 2 inches, 100–120/min",
+        "Change compressors every 2 min (≤10s interruptions)",
+        "Ventilate 1 breath every 6 sec",
+        "30:2 if no advanced airway",
+        "Monitor EtCO2 if available"
+      ],
+      "next": "attach_monitor"
+    },
+
+    "attach_monitor": {
+      "type": "action",
+      "text": "Attach AED / cardiac monitor (non-shockable rhythm expected)",
+      "next": "iv_io_access"
+    },
+
+    "iv_io_access": {
+      "type": "action",
+      "text": "Establish IV or IO access (UP-6)",
+      "next": "administer_epinephrine"
+    },
+
+    "administer_epinephrine": {
+      "type": "action",
+      "text": "Epinephrine 1 mg (1:10,000) IV/IO — repeat every 5 minutes",
+      "next": "fluid_bolus"
+    },
+
+    "fluid_bolus": {
+      "type": "action",
+      "text": "Normal Saline bolus 500 mL IV/IO — repeat as needed to max 2 L",
+      "next": "search_reversible_causes"
+    },
+
+    "search_reversible_causes": {
+      "type": "decision",
+      "text": "Evaluate for reversible causes (Hs & Ts)",
+      "reversibleCauses": [
+        "Hypovolemia",
+        "Hypoxia",
+        "Hydrogen ion (acidosis)",
+        "Hypothermia",
+        "Hypo/Hyperkalemia",
+        "Tension pneumothorax",
+        "Tamponade (cardiac)",
+        "Toxins",
+        "Thrombosis — pulmonary (PE)",
+        "Thrombosis — coronary (MI)"
+      ],
+      "specialCase": {
+        "condition": "Suspected opioid overdose",
+        "action": "Administer Naloxone per TE-7"
+      },
+      "next": "check_blood_glucose"
+    },
+
+    "check_blood_glucose": {
+      "type": "optional",
+      "text": "Check blood glucose if applicable",
+      "next": "agency_specific_meds"
+    },
+
+    "agency_specific_meds": {
+      "type": "optional",
+      "text": "Available agency medications as indicated",
+      "next": "termination_or_continue"
+    },
+
+    "termination_or_continue": {
+      "type": "decision",
+      "text": "Consider On-Scene Termination (AC-12)?",
+      "yesNext": "terminate_on_scene",
+      "noNext": "cpr_loop_back"
+    },
+
+    "cpr_loop_back": {
+      "type": "loop",
+      "text": "Return to CPR and sequence above",
+      "loopTo": "begin_cpr_block"
+    },
+
+    "terminate_on_scene": {
+      "type": "terminal",
+      "text": "Terminate resuscitation per AC-12 and local policy"
+    },
+
+    "rosc_event": {
+      "type": "event",
+      "trigger": "Any-time ROSC (pulse / EtCO2 spike > 40)",
+      "next": "post_resuscitation"
+    },
+
+    "post_resuscitation": {
+      "type": "jump",
+      "text": "Go to Post-Resuscitation Protocol (AC-10)"
+    },
+
+    "transport_or_med_control": {
+      "type": "end",
+      "text": "Notify destination or contact Medical Control"
+    }
+  }
+}
