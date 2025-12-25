@@ -1,125 +1,208 @@
 {
   "protocolId": "AC-2",
   "title": "Bradycardia; Pulse Present",
-  "entry": "is_symptomatic",
-
+  "start": "is_symptomatic",
+  "description": "Protocol for managing bradycardia with pulse present, including decision pathways and reversible causes",
+  
   "nodes": {
     "is_symptomatic": {
+      "id": "is_symptomatic",
+      "text": "Heart Rate < 60/min AND Symptomatic? (Hypotension, Acute AMS, Ischemic Chest Pain, Acute CHF, Seizures, Syncope, or Shock secondary to bradycardia. Typically HR < 50/min)",
       "type": "decision",
-      "text": "HR < 60/min AND Symptomatic? (Hypotension, AMS, chest pain, CHF, seizures, syncope, shock)",
-      "yesNext": "airway_if_indicated",
-      "noNext": "exit_to_appropriate_protocol"
+      "yesNext": "airway_protocol_if_indicated",
+      "noNext": "exit_to_appropriate_protocol",
+      "decisionLabel": {
+        "yes": "Yes - Symptomatic bradycardia",
+        "no": "No - Not symptomatic"
+      }
     },
 
     "exit_to_appropriate_protocol": {
-      "type": "terminal",
-      "text": "Exit to appropriate protocol(s)"
+      "id": "exit_to_appropriate_protocol",
+      "text": "Exit to Appropriate Protocol(s)",
+      "type": "terminal"
     },
 
-    "airway_if_indicated": {
-      "type": "action",
-      "text": "Airway Protocol AR 1, 2, 3 if indicated",
+    "airway_protocol_if_indicated": {
+      "id": "airway_protocol_if_indicated",
+      "text": "Airway Protocol(s) AR-1, AR-2, AR-3 if indicated",
+      "type": "reference",
       "next": "respiratory_distress_if_indicated"
     },
 
     "respiratory_distress_if_indicated": {
-      "type": "action",
-      "text": "Respiratory Distress Protocol AR 4 if indicated",
+      "id": "respiratory_distress_if_indicated",
+      "text": "Respiratory Distress Protocol AR-4 if indicated",
+      "type": "reference",
       "next": "chest_pain_if_indicated"
     },
 
     "chest_pain_if_indicated": {
-      "type": "action",
-      "text": "Chest Pain: Cardiac & STEMI Protocol AC 4 if indicated",
+      "id": "chest_pain_if_indicated",
+      "text": "Chest Pain: Cardiac and STEMI Protocol AC-4 if indicated",
+      "type": "reference",
       "next": "search_reversible_causes"
     },
 
     "search_reversible_causes": {
+      "id": "search_reversible_causes",
+      "text": "Search for Reversible Causes (Hs & Ts)",
       "type": "action",
-      "text": "Search for reversible causes (Hs & Ts)",
-      "list": [
-        "Hypovolemia",
-        "Hypoxia",
-        "Hydrogen ion (acidosis)",
-        "Hypothermia",
-        "Hypo/Hyperkalemia",
-        "Tension pneumothorax",
-        "Tamponade (cardiac)",
-        "Toxins",
-        "Thrombosis (PE)",
-        "Thrombosis (coronary/MI)"
-      ],
+      "next": "reversible_causes_list",
+      "details": [
+        "Evaluate patient for all reversible causes",
+        "Address any identified causes immediately"
+      ]
+    },
+
+    "reversible_causes_list": {
+      "id": "reversible_causes_list",
+      "text": "Reversible Causes: Hypovolemia, Hypoxia, Hydrogen ion (acidosis), Hypothermia, Hypo/Hyperkalemia, Tension pneumothorax, Tamponade (cardiac), Toxins, Thrombosis - pulmonary (PE), Thrombosis - coronary (MI)",
+      "type": "information",
+      "next": "check_beta_blocker_ccb",
+      "note": "Address reversible causes as they are identified"
+    },
+
+    "check_beta_blocker_ccb": {
+      "id": "check_beta_blocker_ccb",
+      "text": "Suspected Beta-Blocker or Calcium Channel Blocker Overdose?",
+      "type": "decision",
+      "yesNext": "overdose_toxic_ingestion_protocol",
+      "noNext": "12lead_ecg",
+      "decisionLabel": {
+        "yes": "Yes - Suspected overdose",
+        "no": "No - Continue protocol"
+      }
+    },
+
+    "overdose_toxic_ingestion_protocol": {
+      "id": "overdose_toxic_ingestion_protocol",
+      "text": "Follow Overdose / Toxic Ingestion Protocol TE-7",
+      "type": "reference",
       "next": "12lead_ecg"
     },
 
     "12lead_ecg": {
-      "type": "action",
+      "id": "12lead_ecg",
       "text": "12 Lead ECG Procedure",
+      "type": "action",
       "next": "iv_io_access"
     },
 
     "iv_io_access": {
-      "type": "action",
-      "text": "IV / IO Protocol UP 6",
+      "id": "iv_io_access",
+      "text": "IV / IO Protocol UP-6",
+      "type": "reference",
       "next": "cardiac_monitor"
     },
 
     "cardiac_monitor": {
-      "type": "action",
+      "id": "cardiac_monitor",
       "text": "Cardiac Monitor",
+      "type": "action",
       "next": "fluid_bolus"
     },
 
     "fluid_bolus": {
+      "id": "fluid_bolus",
+      "text": "Normal Saline Fluid Bolus 500 mL – 2 L IV/IO (Unless Acute CHF) Maximum 2 L",
       "type": "action",
-      "text": "Normal Saline 500 mL – 2 L IV/IO (unless acute CHF), max 2 L",
-      "next": "atropine"
+      "next": "atropine",
+      "details": {
+        "dose": "500 mL - 2 L",
+        "route": "IV/IO",
+        "contraindication": "Acute CHF",
+        "maximum": "2 L"
+      }
     },
 
     "atropine": {
+      "id": "atropine",
+      "text": "Atropine 1 mg IV/IO - May repeat every 3-5 minutes, Maximum 3 mg",
       "type": "action",
-      "text": "Atropine 1 mg IV/IO; repeat q3–5 min, max total 3 mg",
-      "next": "pressors"
+      "next": "check_improvement_after_atropine",
+      "details": {
+        "dose": "1 mg",
+        "route": "IV/IO",
+        "repeat": "Every 3-5 minutes",
+        "maximum": "3 mg total"
+      }
     },
 
-    "pressors": {
+    "check_improvement_after_atropine": {
+      "id": "check_improvement_after_atropine",
+      "text": "Improvement after Atropine?",
       "type": "decision",
-      "text": "If no improvement after Atropine → Vasopressor infusion",
-      "yesActions": [
-        "Epinephrine 1–10 mcg/min IV/IO titrate to SBP ≥ 90 mmHg",
-        "OR Dopamine 2–20 mcg/kg/min IV/IO titrate to SBP ≥ 90 mmHg"
-      ],
-      "next": "agency_vasopressor"
+      "yesNext": "notify_destination_medical_control",
+      "noNext": "vasopressor_infusion",
+      "decisionLabel": {
+        "yes": "Yes - Patient improved",
+        "no": "No - No improvement"
+      }
+    },
+
+    "vasopressor_infusion": {
+      "id": "vasopressor_infusion",
+      "text": "Vasopressor Infusion - Epinephrine 1-10 mcg/min IV/IO titrate to SBP ≥ 90 mmHg OR Dopamine 2-20 mcg/kg/min IV/IO titrate to SBP ≥ 90 mmHg",
+      "type": "action",
+      "next": "agency_vasopressor",
+      "details": {
+        "epinephrine": "1-10 mcg/min IV/IO, titrate to SBP ≥ 90 mmHg",
+        "dopamine": "2-20 mcg/kg/min IV/IO, titrate to SBP ≥ 90 mmHg",
+        "alternative": "Use either medication based on availability and protocol"
+      }
     },
 
     "agency_vasopressor": {
-      "type": "optional",
+      "id": "agency_vasopressor",
       "text": "Agency Vasopressor (system specific)",
-      "next": "pacing_consideration"
+      "type": "optional",
+      "next": "check_improvement_after_pressors"
     },
 
-    "pacing_consideration": {
+    "check_improvement_after_pressors": {
+      "id": "check_improvement_after_pressors",
+      "text": "Improvement after Vasopressors?",
       "type": "decision",
-      "text": "If no improvement → Start Transcutaneous Pacing (TCP)",
-      "note": "Consider earlier in 2nd or 3rd degree AV block",
-      "next": "consider_sedation"
+      "yesNext": "notify_destination_medical_control",
+      "noNext": "transcutaneous_pacing",
+      "decisionLabel": {
+        "yes": "Yes - Patient improved",
+        "no": "No - No improvement, proceed to pacing"
+      }
+    },
+
+    "transcutaneous_pacing": {
+      "id": "transcutaneous_pacing",
+      "text": "If No Improvement - Start Transcutaneous Pacing (TCP). Consider earlier in 2nd or 3rd degree AV block",
+      "type": "action",
+      "next": "consider_sedation",
+      "details": [
+        "Initiate transcutaneous pacing",
+        "Consider earlier in 2nd or 3rd degree AV block",
+        "Monitor patient response"
+      ]
     },
 
     "consider_sedation": {
+      "id": "consider_sedation",
+      "text": "Consider Sedation - Midazolam 2-2.5 mg IV/IO/IM/IN, Maximum 10 mg (for pacing sedation)",
       "type": "optional",
-      "text": "Midazolam 2–2.5 mg IV/IO/IM/IN, max 10 mg (for pacing sedation)",
-      "next": "notify_med_control"
+      "next": "notify_destination_medical_control",
+      "details": {
+        "medication": "Midazolam",
+        "dose": "2-2.5 mg",
+        "route": "IV/IO/IM/IN",
+        "maximum": "10 mg",
+        "indication": "For pacing sedation if needed"
+      }
     },
 
-    "suspected_beta_blocker_ccb": {
-      "type": "branch",
-      "condition": "If suspected Beta-Blocker or Calcium Channel Blocker overdose",
-      "action": "Follow Overdose / Toxic Ingestion Protocol TE 7"
-    },
-
-    "notify_med_control": {
-      "type": "terminal",
-      "text": "Notify destination or Contact Medical Control"
+    "notify_destination_medical_control": {
+      "id": "notify_destination_medical_control",
+      "text": "Notify Destination or Contact Medical Control",
+      "type": "end"
     }
   }
 }
+
