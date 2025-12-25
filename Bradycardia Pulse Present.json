@@ -1,0 +1,125 @@
+{
+  "protocolId": "AC-2",
+  "title": "Bradycardia; Pulse Present",
+  "entry": "is_symptomatic",
+
+  "nodes": {
+    "is_symptomatic": {
+      "type": "decision",
+      "text": "HR < 60/min AND Symptomatic? (Hypotension, AMS, chest pain, CHF, seizures, syncope, shock)",
+      "yesNext": "airway_if_indicated",
+      "noNext": "exit_to_appropriate_protocol"
+    },
+
+    "exit_to_appropriate_protocol": {
+      "type": "terminal",
+      "text": "Exit to appropriate protocol(s)"
+    },
+
+    "airway_if_indicated": {
+      "type": "action",
+      "text": "Airway Protocol AR 1, 2, 3 if indicated",
+      "next": "respiratory_distress_if_indicated"
+    },
+
+    "respiratory_distress_if_indicated": {
+      "type": "action",
+      "text": "Respiratory Distress Protocol AR 4 if indicated",
+      "next": "chest_pain_if_indicated"
+    },
+
+    "chest_pain_if_indicated": {
+      "type": "action",
+      "text": "Chest Pain: Cardiac & STEMI Protocol AC 4 if indicated",
+      "next": "search_reversible_causes"
+    },
+
+    "search_reversible_causes": {
+      "type": "action",
+      "text": "Search for reversible causes (Hs & Ts)",
+      "list": [
+        "Hypovolemia",
+        "Hypoxia",
+        "Hydrogen ion (acidosis)",
+        "Hypothermia",
+        "Hypo/Hyperkalemia",
+        "Tension pneumothorax",
+        "Tamponade (cardiac)",
+        "Toxins",
+        "Thrombosis (PE)",
+        "Thrombosis (coronary/MI)"
+      ],
+      "next": "12lead_ecg"
+    },
+
+    "12lead_ecg": {
+      "type": "action",
+      "text": "12 Lead ECG Procedure",
+      "next": "iv_io_access"
+    },
+
+    "iv_io_access": {
+      "type": "action",
+      "text": "IV / IO Protocol UP 6",
+      "next": "cardiac_monitor"
+    },
+
+    "cardiac_monitor": {
+      "type": "action",
+      "text": "Cardiac Monitor",
+      "next": "fluid_bolus"
+    },
+
+    "fluid_bolus": {
+      "type": "action",
+      "text": "Normal Saline 500 mL – 2 L IV/IO (unless acute CHF), max 2 L",
+      "next": "atropine"
+    },
+
+    "atropine": {
+      "type": "action",
+      "text": "Atropine 1 mg IV/IO; repeat q3–5 min, max total 3 mg",
+      "next": "pressors"
+    },
+
+    "pressors": {
+      "type": "decision",
+      "text": "If no improvement after Atropine → Vasopressor infusion",
+      "yesActions": [
+        "Epinephrine 1–10 mcg/min IV/IO titrate to SBP ≥ 90 mmHg",
+        "OR Dopamine 2–20 mcg/kg/min IV/IO titrate to SBP ≥ 90 mmHg"
+      ],
+      "next": "agency_vasopressor"
+    },
+
+    "agency_vasopressor": {
+      "type": "optional",
+      "text": "Agency Vasopressor (system specific)",
+      "next": "pacing_consideration"
+    },
+
+    "pacing_consideration": {
+      "type": "decision",
+      "text": "If no improvement → Start Transcutaneous Pacing (TCP)",
+      "note": "Consider earlier in 2nd or 3rd degree AV block",
+      "next": "consider_sedation"
+    },
+
+    "consider_sedation": {
+      "type": "optional",
+      "text": "Midazolam 2–2.5 mg IV/IO/IM/IN, max 10 mg (for pacing sedation)",
+      "next": "notify_med_control"
+    },
+
+    "suspected_beta_blocker_ccb": {
+      "type": "branch",
+      "condition": "If suspected Beta-Blocker or Calcium Channel Blocker overdose",
+      "action": "Follow Overdose / Toxic Ingestion Protocol TE 7"
+    },
+
+    "notify_med_control": {
+      "type": "terminal",
+      "text": "Notify destination or Contact Medical Control"
+    }
+  }
+}
